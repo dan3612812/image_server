@@ -11,7 +11,7 @@ var auth = require('./auth.js');
 //可以使用其他位置的物件
 //var routers = require('./routers');
 var fs = require('fs');
-var upload = require('./fileupload.js');
+//var upload = require('./fileupload.js');
 //----//
 
 
@@ -56,7 +56,7 @@ app.get('/upload', function (req, res) {
     console.log("get /upload");
     //res.render("upload");
 });
-
+/*
 app.post('/upload', upload.single('avatar'), function (req, res, next) {
     console.log(req.file);
     if (req.file) {
@@ -69,6 +69,7 @@ app.post('/upload', upload.single('avatar'), function (req, res, next) {
     }
 
 });
+*/
 //-------------------BASE64 -----------//
 
 const base64 = require('node-base64-image');
@@ -163,6 +164,7 @@ function writedatabase(id, clas, cate) {
     var sql = "UPDATE `" + table + "_data` SET `" + table + "_" + field + "`='" + tmpway + "' WHERE `" + table + "_id` =" + id;
     //console.log(tmpway);
     console.log(sql);
+    /*
     connection.query(sql, function (error, result) {
         if (error) throw error;
         if (result.changedRows == 0) {
@@ -174,7 +176,7 @@ function writedatabase(id, clas, cate) {
             callback(1);
         }
     });
-
+    */
 
 }
 //將圖片轉base64 沒用 拿來測試的
