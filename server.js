@@ -3,7 +3,8 @@ var app = require('express')();
 var http = require('http').Server(app);
 var bodyParser = require('body-parser');
 var cookie = require('cookie-parser');
-
+var mysql = require('mysql');
+var auth = require('./auth.js');
 
 //var router = express.Router();
 
@@ -16,7 +17,6 @@ var upload = require('./fileupload.js');
 
 app.set('view engine', 'ejs');
 app.use('/static', express.static('static'));
-
 app.set('port', process.env.PORT || 5025);// 設定環境port
 //app.use(bodyParser.json());  //解析post內容
 //app.use(bodyParser.urlencoded({ extended: true }));
@@ -34,15 +34,22 @@ app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 //本機檔案 位子
 var path = ["test", "member", "shop", "boss", "product", "gift", "ad"];
 //----//
+//取得mysql 資訊
+var connection = mysql.createConnection({
+    host: auth.MySQL.host,
+    user: auth.MySQL.user,
+    password: auth.MySQL.password,
+    database: auth.MySQL.database,
+    dataStrings: true
+});
+
+
 /* GET home page. */
-
-
 app.get('/', function (req, res) {
     console.log("index");
     res.send("get / index");
     // res.render('index', { title: 'Express' });
 });
-
 //路徑只能用' 不能用" 雙引號
 app.get('/upload', function (req, res) {
     res.send('get /upload');
@@ -62,17 +69,14 @@ app.post('/upload', upload.single('avatar'), function (req, res, next) {
     }
 
 });
-
-//module.exports = router;
-
 //-------------------BASE64 -----------//
 
 const base64 = require('node-base64-image');
 
-var base64str = base64_encode('./images/test/test.jpg');
-var id = 2;
-var clas = 0;
-var cate = 1;
+//var base64str = base64_encode('./images/test/test.jpg');
+//var id = 0;
+//var clas = 0;
+//var cate = 1;
 
 app.post('/createimage', function (req, res) {
     var id = req.body.id;
@@ -159,7 +163,17 @@ function writedatabase(id, clas, cate) {
     var sql = "UPDATE `" + table + "_data` SET `" + table + "_" + field + "`='" + tmpway + "' WHERE `" + table + "_id` =" + id;
     //console.log(tmpway);
     console.log(sql);
-
+    connection.query(sql, function (error, result) {
+        if (error) throw error;
+        if (result.changedRows == 0) {
+            //修改失敗
+            console.log('///mysql Update is error///');
+            callback(0);
+        } else {
+            //修改成功
+            callback(1);
+        }
+    });
 
 
 }
